@@ -8,7 +8,7 @@ import { formatCurrency } from "@/lib/formatters";
 type Product = {
   id: string;
   name: string;
-  description: string;
+  description: string | null;
   price: number;
   imageUrl: string | null;
   available: boolean;

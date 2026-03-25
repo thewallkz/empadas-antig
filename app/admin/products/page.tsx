@@ -7,7 +7,7 @@ import { Plus, Edit2, Trash2, Check, X, Package } from "lucide-react";
 type Product = {
   id: string;
   name: string;
-  description: string;
+  description: string | null;
   price: number;
   imageUrl: string | null;
   available: boolean;
