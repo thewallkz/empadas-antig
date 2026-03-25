@@ -5,6 +5,7 @@ import { useCartStore } from "@/store/useCartStore";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, CheckCircle2, CreditCard, Store, AlertCircle } from "lucide-react";
 import Link from "next/link";
+import { formatCurrency } from "@/lib/formatters";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function CheckoutPage() {
@@ -148,13 +149,13 @@ export default function CheckoutPage() {
                  {items.map(item => (
                    <div key={item.productId} className="flex justify-between text-sm">
                      <span className="text-neutral-600 truncate pr-4">{item.quantity}x {item.name}</span>
-                     <span className="font-bold text-neutral-900">R$ {(item.price * item.quantity).toFixed(2).replace(".", ",")}</span>
+                     <span className="font-bold text-neutral-900">{formatCurrency(item.price * item.quantity)}</span>
                    </div>
                  ))}
                </div>
                <div className="pt-4 border-t border-neutral-100 flex justify-between items-center mb-6">
                  <span className="font-bold text-neutral-500">Total</span>
-                 <span className="text-2xl font-black text-emerald-600">R$ {total.toFixed(2).replace(".", ",")}</span>
+                 <span className="text-2xl font-black text-emerald-600">{formatCurrency(total)}</span>
                </div>
                
                <button 
@@ -194,7 +195,7 @@ export default function CheckoutPage() {
                <div className="bg-neutral-50 rounded-2xl p-4 mb-6 text-sm">
                   <div className="flex justify-between mb-2">
                     <span className="text-neutral-500">Total a pagar:</span>
-                    <span className="font-bold text-neutral-900 text-lg">R$ {total.toFixed(2).replace(".", ",")}</span>
+                    <span className="font-bold text-neutral-900 text-lg">{formatCurrency(total)}</span>
                   </div>
                   <div className="flex justify-between mb-2">
                     <span className="text-neutral-500">Pagamento:</span>

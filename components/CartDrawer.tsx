@@ -5,6 +5,7 @@ import { X, Minus, Plus, ShoppingBag } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { formatCurrency } from "@/lib/formatters";
 
 export function CartDrawer() {
   const { items, isOpen, setIsOpen, removeItem, updateQuantity, getCartTotal, getCartCount } = useCartStore();
@@ -89,7 +90,7 @@ export function CartDrawer() {
                            </button>
                          </div>
                          <div className="flex justify-between items-center mt-2">
-                           <p className="font-bold text-emerald-600">R$ {item.price.toFixed(2).replace(".", ",")}</p>
+                           <p className="font-bold text-emerald-600">{formatCurrency(item.price)}</p>
                            
                            <div className="flex items-center bg-neutral-50 rounded-full border border-neutral-200">
                               <button 
@@ -120,7 +121,7 @@ export function CartDrawer() {
                 <div className="flex justify-between items-center mb-6">
                   <span className="text-neutral-500 font-medium">Total do pedido</span>
                   <span className="text-2xl font-black text-neutral-900">
-                    R$ {getCartTotal().toFixed(2).replace(".", ",")}
+                    {formatCurrency(getCartTotal())}
                   </span>
                 </div>
                 <Link 

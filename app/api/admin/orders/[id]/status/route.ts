@@ -3,10 +3,11 @@ import prisma from "@/lib/prisma";
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const resolvedParams = await params;
+    const { id } = resolvedParams;
     const { status } = await request.json();
 
     if (!status || !["ABERTO", "CONFIRMADO", "CANCELADO"].includes(status)) {

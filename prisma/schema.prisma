@@ -18,15 +18,26 @@ model Product {
   orderItems  OrderItem[]
 }
 
+enum OrderStatus {
+  ABERTO
+  CONFIRMADO
+  CANCELADO
+}
+
+enum PaymentMethod {
+  PAGAR_AGORA
+  PAGAR_NA_RETIRADA
+}
+
 model Order {
-  id             String   @id @default(uuid())
+  id             String        @id @default(uuid())
   clientName     String
   clientContact  String?
-  status         String   @default("ABERTO") // ABERTO, CONFIRMADO
-  paymentMethod  String   // PAGAR_AGORA, PAGAR_NA_RETIRADA
+  status         OrderStatus   @default(ABERTO)
+  paymentMethod  PaymentMethod
   totalAmount    Float
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
   items          OrderItem[]
 }
 
