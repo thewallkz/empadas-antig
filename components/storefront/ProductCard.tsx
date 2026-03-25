@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Plus, ShoppingBag } from "lucide-react";
+import Image from "next/image";
 import { useCartStore } from "@/store/useCartStore";
 import { formatCurrency } from "@/lib/formatters";
 
@@ -26,7 +27,13 @@ export function ProductCard({ product, index }: { product: Product; index: numbe
     >
       <div className="relative aspect-square rounded-2xl overflow-hidden bg-neutral-50 mb-4">
         {product.imageUrl ? (
-          <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <Image
+            src={product.imageUrl}
+            alt={product.name}
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
+          />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
              <ShoppingBag className="w-12 h-12 text-neutral-300" />

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdminSession } from "@/lib/admin-auth";
 import prisma from "@/lib/prisma";
 
 export async function PATCH(
@@ -6,6 +7,12 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const authResult = await requireAdminSession();
+
+    if (!authResult.authorized) {
+      return authResult.response;
+    }
+
     const resolvedParams = await params;
     const { id } = resolvedParams;
     const { status } = await request.json();

@@ -3,5 +3,5 @@ import { auth } from "@/auth"
 export default auth;
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
+  matcher: ["/admin/:path*", "/api/admin/:path*"],
 }

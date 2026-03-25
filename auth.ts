@@ -1,11 +1,10 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import { PrismaClient } from "@prisma/client"
 import bcrypt from "bcryptjs"
-
-const prisma = new PrismaClient()
+import prisma from "@/lib/prisma"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  secret: process.env.AUTH_SECRET,
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -46,20 +45,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const isOnAdmin = nextUrl.pathname.startsWith('/admin');
+      const isOnAdminApi = nextUrl.pathname.startsWith('/api/admin');
       
-      if (isOnAdmin) {
-        // If logged in and trying to access login page, redirect to Dashboard
-        if (nextUrl.pathname === '/admin/login') {
-          if (isLoggedIn) return Response.redirect(new URL('/admin/orders', nextUrl));
-          return true; // allow non-logged users to see login page
+      if (nextUrl.pathname === '/admin/login') {
+        if (isLoggedIn) {
+          return Response.redirect(new URL('/admin/orders', nextUrl));
         }
-        // General protection for /admin/*
-        if (isLoggedIn) return true;
-        
-        // Redirect to login
-        return false;
+
+        return true;
       }
-      return true; // Allow API and public routes
+
+      if (isOnAdminApi) {
+        if (isLoggedIn) {
+          return true;
+        }
+
+        return Response.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      if (isOnAdmin) {
+        return isLoggedIn;
+      }
+
+      return true;
     },
   },
   session: { strategy: "jwt" },

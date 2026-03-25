@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CheckCircle2, Clock, XCircle, ShoppingBag, Eye } from "lucide-react";
+import { CheckCircle2, Clock, XCircle, ShoppingBag } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -21,6 +21,8 @@ type Order = {
   createdAt: string;
   items: OrderItem[];
 };
+
+type OrderStatus = Order["status"];
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -47,7 +49,7 @@ export default function AdminOrdersPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const updateStatus = async (id: string, newStatus: string) => {
+  const updateStatus = async (id: string, newStatus: OrderStatus) => {
     try {
       const res = await fetch(`/api/admin/orders/${id}/status`, {
         method: "PATCH",
@@ -55,7 +57,11 @@ export default function AdminOrdersPage() {
         body: JSON.stringify({ status: newStatus }),
       });
       if (res.ok) {
-        setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus as any } : o));
+        setOrders((currentOrders) =>
+          currentOrders.map((order) =>
+            order.id === id ? { ...order, status: newStatus } : order
+          )
+        );
       }
     } catch (e) {
       console.error(e);

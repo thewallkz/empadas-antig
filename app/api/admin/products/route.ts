@@ -1,11 +1,19 @@
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
+import { requireAdminSession } from "@/lib/admin-auth";
+import { ProductImageError, uploadProductImage } from "@/lib/product-images";
 import prisma from "@/lib/prisma";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
-import crypto from "crypto";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
+    const authResult = await requireAdminSession();
+
+    if (!authResult.authorized) {
+      return authResult.response;
+    }
+
     const products = await prisma.product.findMany({
       orderBy: { createdAt: "desc" },
     });
@@ -18,37 +26,34 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const authResult = await requireAdminSession();
+
+    if (!authResult.authorized) {
+      return authResult.response;
+    }
+
     const formData = await request.formData();
-    const name = formData.get("name") as string;
-    const description = formData.get("description") as string;
-    const priceStr = formData.get("price") as string;
+    const name = formData.get("name")?.toString().trim() || "";
+    const description = formData.get("description")?.toString().trim() || null;
+    const priceStr = formData.get("price")?.toString() || "";
     const file = formData.get("image") as File | null;
-    const availableStr = formData.get("available") as string | null;
+    const availableStr = formData.get("available")?.toString() || "";
 
     if (!name || !priceStr) {
       return NextResponse.json({ error: "Name and price are required" }, { status: 400 });
     }
 
     const price = parseFloat(priceStr);
-    const available = availableStr !== "false"; 
+    const available = availableStr === "true";
+
+    if (!Number.isFinite(price) || price < 0) {
+      return NextResponse.json({ error: "Price must be a valid positive number" }, { status: 400 });
+    }
 
     let imageUrl = null;
 
     if (file && file.size > 0) {
-      // Create uploads directory if it doesn't exist
-      const uploadDir = join(process.cwd(), "public/uploads");
-      await mkdir(uploadDir, { recursive: true });
-
-      // Generate unique filename
-      const ext = file.name.split(".").pop();
-      const uniqueName = `${crypto.randomUUID()}-${Date.now()}.${ext}`;
-      const filePath = join(uploadDir, uniqueName);
-
-      // Save file
-      const buffer = Buffer.from(await file.arrayBuffer());
-      await writeFile(filePath, buffer);
-
-      imageUrl = `/uploads/${uniqueName}`;
+      imageUrl = await uploadProductImage(file);
     }
 
     const newProduct = await prisma.product.create({
@@ -61,9 +66,14 @@ export async function POST(request: Request) {
       },
     });
 
+    revalidatePath("/");
+
     return NextResponse.json(newProduct, { status: 201 });
   } catch (error) {
     console.error("POST Product Error:", error);
-    return NextResponse.json({ error: "Failed to create product" }, { status: 500 });
+    const message =
+      error instanceof Error ? error.message : "Failed to create product";
+    const status = error instanceof ProductImageError ? error.status : 500;
+    return NextResponse.json({ error: message }, { status });
   }
 }

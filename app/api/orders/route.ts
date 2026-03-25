@@ -1,17 +1,38 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
+type OrderRequestItem = {
+  productId: string;
+  quantity: number;
+};
+
+type OrderRequestBody = {
+  clientContact?: string | null;
+  clientName?: string;
+  items?: OrderRequestItem[];
+  paymentMethod?: "PAGAR_AGORA" | "PAGAR_NA_RETIRADA";
+};
+
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const body = (await request.json()) as OrderRequestBody;
     const { clientName, clientContact, paymentMethod, items } = body;
 
-    if (!clientName || !paymentMethod || !items || items.length === 0) {
+    if (
+      !clientName ||
+      !paymentMethod ||
+      !Array.isArray(items) ||
+      items.length === 0
+    ) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
+    if (!["PAGAR_AGORA", "PAGAR_NA_RETIRADA"].includes(paymentMethod)) {
+      return NextResponse.json({ error: "Invalid payment method" }, { status: 400 });
+    }
+
     // Calculate total securely on backend
-    const productIds = items.map((i: any) => i.productId);
+    const productIds = items.map((item) => item.productId);
     const dbProducts = await prisma.product.findMany({
       where: { id: { in: productIds } },
     });
@@ -21,12 +42,12 @@ export async function POST(request: Request) {
     }
 
     let totalAmount = 0;
-    const orderItemsData = items.map((item: any) => {
+    const orderItemsData = items.map((item) => {
       const dbProduct = dbProducts.find((p) => p.id === item.productId);
       if (!dbProduct) throw new Error("Product mismatch");
 
       const unitPrice = dbProduct.price;
-      const quantity = Math.max(1, item.quantity);
+      const quantity = Math.max(1, Number(item.quantity) || 1);
       totalAmount += unitPrice * quantity;
 
       return {

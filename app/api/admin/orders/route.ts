@@ -1,10 +1,17 @@
 import { NextResponse } from "next/server";
+import { requireAdminSession } from "@/lib/admin-auth";
 import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
+    const authResult = await requireAdminSession();
+
+    if (!authResult.authorized) {
+      return authResult.response;
+    }
+
     const orders = await prisma.order.findMany({
       orderBy: { createdAt: "desc" },
       include: {

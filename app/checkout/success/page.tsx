@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CheckCircle2, ChevronRight, ShoppingBag } from "lucide-react";
+import { CheckCircle2, ShoppingBag } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function CheckoutSuccessPage() {
@@ -27,12 +27,6 @@ export default function CheckoutSuccessPage() {
             className="w-full justify-center flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-emerald-500/25 transition-all text-lg"
           >
             <ShoppingBag size={20} /> Continuar na Loja
-          </Link>
-          <Link 
-            href="/admin/orders"
-            className="w-full justify-center flex items-center gap-1 py-3 text-neutral-400 hover:text-neutral-600 font-semibold transition-colors mt-2"
-          >
-            Acessar Painel (Admin) <ChevronRight size={16} />
           </Link>
         </div>
       </motion.div>

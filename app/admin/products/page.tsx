@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Plus, Edit2, Trash2, Check, X, Package } from "lucide-react";
 
 type Product = {
@@ -44,7 +45,13 @@ export default function AdminProductsPage() {
         body: JSON.stringify({ available: !currentStatus }),
       });
       if (res.ok) {
-        setProducts(products.map(p => p.id === id ? { ...p, available: !currentStatus } : p));
+        setProducts((currentProducts) =>
+          currentProducts.map((product) =>
+            product.id === id
+              ? { ...product, available: !currentStatus }
+              : product
+          )
+        );
       }
     } catch (e) {
       console.error(e);
@@ -106,7 +113,13 @@ export default function AdminProductsPage() {
                   <td className="p-4">
                     <div className="flex items-center gap-4">
                       {product.imageUrl ? (
-                        <img src={product.imageUrl} alt={product.name} className="w-12 h-12 rounded-xl object-cover border border-neutral-100 shadow-sm" />
+                        <Image
+                          src={product.imageUrl}
+                          alt={product.name}
+                          width={48}
+                          height={48}
+                          className="w-12 h-12 rounded-xl object-cover border border-neutral-100 shadow-sm"
+                        />
                       ) : (
                         <div className="w-12 h-12 rounded-xl bg-neutral-100 flex items-center justify-center border border-neutral-200">
                           <Package size={20} className="text-neutral-400" />
@@ -136,7 +149,13 @@ export default function AdminProductsPage() {
                   </td>
                   <td className="p-4 text-right">
                     <div className="flex justify-end gap-2">
-                       {/* Edit button mocked for now or navigate to edit route */}
+                      <Link
+                        href={`/admin/products/${product.id}/edit`}
+                        className="p-2 text-neutral-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                        title="Editar produto"
+                      >
+                        <Edit2 size={18} />
+                      </Link>
                       <button onClick={() => deleteProduct(product.id)} className="p-2 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
                         <Trash2 size={18} />
                       </button>

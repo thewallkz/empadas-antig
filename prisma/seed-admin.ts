@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../app/generated/prisma';
 import bcrypt from 'bcryptjs';
 import * as dotenv from 'dotenv';
 import * as path from 'path';

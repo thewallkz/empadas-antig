@@ -4,16 +4,17 @@ import { useCartStore } from "@/store/useCartStore";
 import { X, Minus, Plus, ShoppingBag } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useSyncExternalStore } from "react";
 import { formatCurrency } from "@/lib/formatters";
 
 export function CartDrawer() {
   const { items, isOpen, setIsOpen, removeItem, updateQuantity, getCartTotal, getCartCount } = useCartStore();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false
+  );
 
   if (!mounted) return null;
 
@@ -76,7 +77,13 @@ export function CartDrawer() {
                   {items.map((item) => (
                     <motion.div layout key={item.productId} className="flex gap-4">
                       {item.imageUrl ? (
-                         <img src={item.imageUrl} alt={item.name} className="w-20 h-20 object-cover rounded-2xl border border-neutral-100 shadow-sm" />
+                         <Image
+                           src={item.imageUrl}
+                           alt={item.name}
+                           width={80}
+                           height={80}
+                           className="w-20 h-20 object-cover rounded-2xl border border-neutral-100 shadow-sm"
+                         />
                        ) : (
                          <div className="w-20 h-20 bg-neutral-100 rounded-2xl flex items-center justify-center border border-neutral-200">
                             <ShoppingBag className="text-neutral-300" />
