@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Empadas Antigravity - Ordering System
+
+Empadas Antigravity is a modern, mobile-first ordering system built to manage savory snacks sales. It features a complete client-facing storefront for users to browse and order products, alongside a secure admin dashboard for managing products, categories, and active orders.
+
+## Tech Stack
+
+- **Framework**: [Next.js](https://nextjs.org/) (App Router)
+- **Database ORM**: [Prisma](https://www.prisma.io/)
+- **Database**: [Supabase](https://supabase.com/) (PostgreSQL)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Authentication**: NextAuth / Custom DB Authentication
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **State Management**: [Zustand](https://zustand-demo.pmnd.rs/)
+
+## Features
+
+- **Client Storefront**: A premium, responsive UI for customers to explore the menu, add items to the cart, and place orders.
+- **Admin Dashboard**: Secure area to manage menu items (create, update, delete), organize them into categories, and track order statuses.
+- **Order Workflow**: End-to-end flow from product selection by the client to order confirmation and management by the admin.
+- **Local Image Storage**: Built-in handling of product images locally during development.
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js (v18 or higher recommended)
+- A Supabase project (for PostgreSQL connection)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. Set up environment variables:
+   Create a `.env` file in the root directory and add your connection variables:
+   ```env
+   DATABASE_URL="your_transaction_connection_string"
+   DIRECT_URL="your_session_connection_string"
+   ```
 
-## Learn More
+3. Generate Prisma client and sync database structure:
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. Run the development server:
+   ```bash
+   npm run dev
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Open [http://localhost:3000](http://localhost:3000) to view the client app.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deploying
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is configured for deployment on [Vercel](https://vercel.com/). Ensure that your environment variables (like `DATABASE_URL` and `DIRECT_URL`) are properly configured in Vercel before triggering a deployment.
