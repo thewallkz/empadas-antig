@@ -1,10 +1,24 @@
 import { PrismaClient } from '@/app/generated/prisma'
 
 const prismaClientSingleton = () => {
-  return new PrismaClient()
+  const url = process.env.DATABASE_URL
+
+  if (!url) {
+    throw new Error(
+      'DATABASE_URL environment variable is not set. ' +
+      'Please add it to your .env file or Vercel environment variables.'
+    )
+  }
+
+  return new PrismaClient({
+    datasources: {
+      db: { url },
+    },
+  })
 }
 
 declare global {
+  // eslint-disable-next-line no-var
   var prisma: undefined | ReturnType<typeof prismaClientSingleton>
 }
 
