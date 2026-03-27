@@ -7,7 +7,9 @@ import { FloatingCartButton } from "@/components/storefront/FloatingCartButton";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 
-export const revalidate = 30;
+// Force dynamic rendering so Prisma queries run at request time,
+// not during the Vercel build step where DATABASE_URL may not be set.
+export const dynamic = "force-dynamic";
 
 export default async function Storefront() {
   const products = await prisma.product.findMany({

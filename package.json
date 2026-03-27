@@ -10,7 +10,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate --schema=prisma/schema.prisma"
   },
   "dependencies": {
     "@prisma/client": "^7.5.0",

@@ -5,17 +5,18 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Product {
-  id          String   @id @default(uuid())
+  id          String      @id @default(uuid())
   name        String
   description String?
   imageUrl    String?
-  available   Boolean  @default(true)
+  available   Boolean     @default(true)
   price       Float
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
   orderItems  OrderItem[]
 }
 
@@ -31,26 +32,26 @@ enum PaymentMethod {
 }
 
 model Order {
-  id             String        @id @default(uuid())
-  clientName     String
-  clientContact  String?
-  status         OrderStatus   @default(ABERTO)
-  paymentMethod  PaymentMethod
-  totalAmount    Float
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  items          OrderItem[]
+  id            String        @id @default(uuid())
+  clientName    String
+  clientContact String?
+  status        OrderStatus   @default(ABERTO)
+  paymentMethod PaymentMethod
+  totalAmount   Float
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  items         OrderItem[]
 }
 
 model OrderItem {
-  id             String   @id @default(uuid())
-  orderId        String
-  productId      String
-  quantity       Int
-  unitPrice      Float
-  
-  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product        Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  id        String  @id @default(uuid())
+  orderId   String
+  productId String
+  quantity  Int
+  unitPrice Float
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
 }
 
 model Admin {
