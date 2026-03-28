@@ -1,3 +1,4 @@
+import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@/app/generated/prisma'
 
 const prismaClientSingleton = () => {
@@ -11,9 +12,7 @@ const prismaClientSingleton = () => {
   }
 
   return new PrismaClient({
-    datasources: {
-      db: { url },
-    },
+    adapter: new PrismaPg(url),
   })
 }
 
