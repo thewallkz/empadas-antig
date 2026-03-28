@@ -6,13 +6,14 @@ import {
   deleteProductImage,
   uploadProductImage,
 } from "@/lib/product-images";
-import prisma from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const prisma = getPrisma();
     const authResult = await requireAdminSession();
 
     if (!authResult.authorized) {
@@ -55,6 +56,7 @@ export async function PATCH(
   let nextImageUrl: string | null = null;
 
   try {
+    const prisma = getPrisma();
     const authResult = await requireAdminSession();
 
     if (!authResult.authorized) {
@@ -133,6 +135,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const prisma = getPrisma();
     const authResult = await requireAdminSession();
 
     if (!authResult.authorized) {

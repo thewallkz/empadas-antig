@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 type OrderRequestItem = {
   productId: string;
@@ -15,6 +15,7 @@ type OrderRequestBody = {
 
 export async function POST(request: Request) {
   try {
+    const prisma = getPrisma();
     const body = (await request.json()) as OrderRequestBody;
     const { clientName, clientContact, paymentMethod, items } = body;
 

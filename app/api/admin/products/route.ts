@@ -2,12 +2,13 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { ProductImageError, uploadProductImage } from "@/lib/product-images";
-import prisma from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
+    const prisma = getPrisma();
     const authResult = await requireAdminSession();
 
     if (!authResult.authorized) {
@@ -26,6 +27,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const prisma = getPrisma();
     const authResult = await requireAdminSession();
 
     if (!authResult.authorized) {

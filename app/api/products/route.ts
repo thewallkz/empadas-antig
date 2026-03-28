@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
+    const prisma = getPrisma();
     const products = await prisma.product.findMany({
       where: { available: true },
       orderBy: { createdAt: "desc" },

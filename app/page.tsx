@@ -4,7 +4,7 @@ import { ProductCard } from "@/components/storefront/ProductCard";
 import { EmptyState } from "@/components/storefront/EmptyState";
 import { CartDrawer } from "@/components/CartDrawer";
 import { FloatingCartButton } from "@/components/storefront/FloatingCartButton";
-import prisma from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import Link from "next/link";
 
 // Force dynamic rendering so Prisma queries run at request time,
@@ -12,6 +12,7 @@ import Link from "next/link";
 export const dynamic = "force-dynamic";
 
 export default async function Storefront() {
+  const prisma = getPrisma();
   const products = await prisma.product.findMany({
     where: { available: true },
     orderBy: { createdAt: "desc" },

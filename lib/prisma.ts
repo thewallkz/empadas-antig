@@ -1,8 +1,8 @@
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@/app/generated/prisma'
 
-const prismaClientSingleton = () => {
-  const url = process.env.DATABASE_URL
+function createPrismaClient() {
+  const url = process.env.DATABASE_URL?.trim()
 
   if (!url) {
     throw new Error(
@@ -17,12 +17,13 @@ const prismaClientSingleton = () => {
 }
 
 declare global {
-  // eslint-disable-next-line no-var
-  var prisma: undefined | ReturnType<typeof prismaClientSingleton>
+  var prisma: undefined | ReturnType<typeof createPrismaClient>
 }
 
-const prisma = globalThis.prisma ?? prismaClientSingleton()
+export function getPrisma() {
+  if (!globalThis.prisma) {
+    globalThis.prisma = createPrismaClient()
+  }
 
-export default prisma
-
-if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma
+  return globalThis.prisma
+}
