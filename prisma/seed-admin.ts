@@ -1,51 +1,57 @@
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../app/generated/prisma';
-import bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcryptjs';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 
 // Load .env relative to scripts path
 dotenv.config({ path: path.join(process.cwd(), '.env') });
 
-const prisma = new PrismaClient();
+const databaseUrl = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
+
+if (!databaseUrl) {
+  throw new Error('DIRECT_URL or DATABASE_URL must be defined in .env');
+}
+
+const prisma = new PrismaClient({
+  adapter: new PrismaPg(databaseUrl),
+});
 
 async function main() {
   const email = process.env.ADMIN_EMAIL;
   const password = process.env.ADMIN_PASSWORD;
 
   if (!email || !password) {
-    console.error('❌ ADMIN_EMAIL and ADMIN_PASSWORD must be defined in .env');
+    console.error('ADMIN_EMAIL and ADMIN_PASSWORD must be defined in .env');
     process.exit(1);
   }
 
-  // Check if admin already exists
   const existingAdmin = await prisma.admin.findUnique({
     where: { email },
   });
 
   if (existingAdmin) {
-    console.log(`✅ Admin user with email ${email} already exists.`);
+    console.log(`Admin user with email ${email} already exists.`);
     return;
   }
 
-  // Hash password
   const saltRounds = 10;
   const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-  // Create admin user
   await prisma.admin.create({
     data: {
       name: 'Administrador',
-      email: email,
+      email,
       password: hashedPassword,
     },
   });
 
-  console.log(`🎉 Successfully created admin user: ${email}`);
+  console.log(`Successfully created admin user: ${email}`);
 }
 
 main()
-  .catch((e) => {
-    console.error('❌ Error seeding admin:', e);
+  .catch((error) => {
+    console.error('Error seeding admin:', error);
     process.exit(1);
   })
   .finally(async () => {
